@@ -30,9 +30,19 @@ Assurez-vous d'avoir installé le SDK Dart sur votre machine.
 2. **Récupérer les dépendances** nécessaires (notamment le package de test) en exécutant la commande suivante dans votre terminal :
    ```bash
    dart pub get
+   ```
+
+---
 
 ## Lancement des tests
-  - Le test s'effectue avec la commande dart test tapé dans le terminal de l'IDE
+  - Le test s'effectue avec la commande suivante tapé dans le terminal de l'IDE
+    ```bash
+    dart test
+    ```
+---
 
 ## Lancement de l'app
   - L'app se met en marche avec la commande dart run encore une fois tapé dans le terminal de l'IDE
+```bash
+    dart run
+    
