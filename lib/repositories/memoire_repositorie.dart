@@ -2,7 +2,7 @@ import 'package:gestion_de_taches/exceptions/tache_exception.dart';
 import 'package:gestion_de_taches/models/tache.dart';
 import 'package:gestion_de_taches/repositories/repositorie_Interface.dart';
 
-class MemoireRepositorie implements RepositoryInterface<Tache>{
+class MemoireRepositorie implements IRepository<Tache>{
 
 final List<Tache> _taches = [];
 

@@ -7,7 +7,7 @@ import '../models/priorite.dart';
 import '../exceptions/tache_exception.dart';
 import 'repositorie_interface.dart';
 
-class JsonTaskRepository implements RepositoryInterface<Tache> {
+class JsonTaskRepository implements IRepository<Tache> {
   final String filePath;
 
   JsonTaskRepository({this.filePath = 'taches.json'});

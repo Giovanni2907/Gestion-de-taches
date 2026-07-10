@@ -1,4 +1,4 @@
-abstract class RepositoryInterface<T> {
+abstract class IRepository<T> {
   Future<List<T>> getAll();
   Future<T?> getById(int id);
   Future<void> add(T item);

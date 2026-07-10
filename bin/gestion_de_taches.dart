@@ -8,7 +8,7 @@ import 'package:gestion_de_taches/repositories/repositorie_interface.dart';
 import 'package:gestion_de_taches/exceptions/tache_exception.dart';
 
 void main() async {
-  final RepositoryInterface<Tache> repository = JsonTaskRepository();
+  final IRepository<Tache> repository = JsonTaskRepository();
 
   print("====================================================");
   print("   BIENVENUE DANS L'APPLICATION GESTION DE TÂCHES   ");
