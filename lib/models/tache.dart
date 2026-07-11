@@ -1,13 +1,13 @@
 import 'package:gestion_de_taches/models/priorite.dart';
 
-abstract class Tache {
+abstract class Task {
   final int id;
   final String titre;
   final Priorite priorite;
   final DateTime? dateLimite;
   bool estComplete = false;
 
-  Tache({
+  Task({
     required this.id,
     required this.titre,
     required this.priorite,

@@ -7,12 +7,12 @@ import '../models/priorite.dart';
 import '../exceptions/tache_exception.dart';
 import 'repositorie_interface.dart';
 
-class JsonTaskRepository implements IRepository<Tache> {
+class JsonTaskRepository implements IRepository<Task> {
   final String filePath;
 
   JsonTaskRepository({this.filePath = 'taches.json'});
 
-  Future<List<Tache>> _loadFromFile() async {
+  Future<List<Task>> _loadFromFile() async {
     try {
       final file = File(filePath);
       if (!await file.exists()) {
@@ -33,11 +33,11 @@ class JsonTaskRepository implements IRepository<Tache> {
         final DateTime? dateLimite = dateLimiteRaw != null ? DateTime.parse(dateLimiteRaw as String) : null;
 
         if (priorite == Priorite.high) {
-          final tache = TacheUrgente(id: id, titre: titre, priorite: priorite, dateLimite: dateLimite);
+          final tache = UrgentTask(id: id, titre: titre, dateLimite: dateLimite);
           tache.estComplete = estComplete;
           return tache;
         } else {
-          final tache = TacheStandard(id: id, titre: titre, priorite: priorite, dateLimite: dateLimite);
+          final tache = StandardTask(id: id, titre: titre, priorite: priorite, dateLimite: dateLimite);
           tache.estComplete = estComplete;
           return tache;
         }
@@ -46,9 +46,8 @@ class JsonTaskRepository implements IRepository<Tache> {
       throw JsonPersistenceException("Impossible de lire le fichier JSON : $e");
     }
   }
-  
 
-  Future<void> _saveToFile(List<Tache> taches) async {
+  Future<void> _saveToFile(List<Task> taches) async {
     try {
       final file = File(filePath);
       
@@ -60,7 +59,6 @@ class JsonTaskRepository implements IRepository<Tache> {
         'dateLimite': tache.dateLimite?.toIso8601String(),
       }).toList();
 
-
       await file.writeAsString(jsonEncode(jsonList));
     } catch (e) {
       throw JsonPersistenceException("Impossible de sauvegarder dans le fichier JSON : $e");
@@ -68,23 +66,20 @@ class JsonTaskRepository implements IRepository<Tache> {
   }
 
   @override
-  Future<void> add(Tache item) async {
+  Future<void> add(Task item) async {
     final taches = await _loadFromFile();
     taches.add(item);
     await _saveToFile(taches);
   }
 
   @override
-Future<List<Tache>> getTasksByPriority(Priorite prioriteCible) async {
-  final toutesLesTaches = await getAll(); 
-  
-  final tachesFiltrees = toutesLesTaches.where((t) => t.priorite == prioriteCible).toList();
-  
-  return tachesFiltrees;
-}
+  Future<List<Task>> getTasksByPriority(Priorite prioriteCible) async {
+    final toutesLesTaches = await _loadFromFile(); 
+    return toutesLesTaches.where((t) => t.priorite == prioriteCible).toList();
+  }
 
   @override
-  Future<Tache?> getById(int id) async {
+  Future<Task?> getById(int id) async {
     final taches = await _loadFromFile();
     final trouvees = taches.where((t) => t.id == id);
     return trouvees.isEmpty ? null : trouvees.first;
@@ -99,16 +94,16 @@ Future<List<Tache>> getTasksByPriority(Priorite prioriteCible) async {
   }
 
   @override
-  Future<void> update(Tache item) async {
+  Future<void> update(Task item) async {
     final taches = await _loadFromFile();
     final index = taches.indexWhere((t) => t.id == item.id);
     if (index == -1) throw TacheException(item.id);
     taches[index] = item;
     await _saveToFile(taches);
   }
+
   @override
-  Future<List<Tache>> getAll() async {
+  Future<List<Task>> getAll() async {
     return await _loadFromFile();
   }
-  
-}
+} 

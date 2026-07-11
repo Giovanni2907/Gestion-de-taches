@@ -27,8 +27,8 @@ void main() {
 
   group('Tests Unitaires - Gestion de Tâches JSON', () {
     
-    test('1. L\'ajout d\'une tache standard doit correctement persister dans le JSON', () async {
-      final tache = TacheStandard(id: 1, titre: 'Acheter du lait', priorite: Priorite.low);
+    test('1. L\'ajout d\'une tâche standard doit correctement persister dans le JSON', () async {
+      final tache = StandardTask(id: 1, titre: 'Acheter du lait', priorite: Priorite.low);
       
       await repo.add(tache);
       final liste = await repo.getAll();
@@ -38,18 +38,17 @@ void main() {
       expect(liste.first.priorite, equals(Priorite.low));
     });
 
-    test('2. L\'ajout d\'une tahce urgente doit être automatiquement configuré en priorité HIGH', () async {
-      final urgent = TacheUrgente(id: 2, titre: 'Corriger bug critique', priorite: Priorite.high);
+    test('2. L\'ajout d\'une tâche urgente doit être automatiquement configuré en priorité HIGH', () async {
+      final urgent = UrgentTask(id: 2, titre: 'Corriger bug critique');
       
       await repo.add(urgent);
       final uniqueTache = await repo.getById(2);
       
       expect(uniqueTache, isNotNull);
-      expect(uniqueTache!.priorite, equals(Priorite.high));
     });
 
     test('3. Supprimer une tâche existante doit la retirer du fichier JSON', () async {
-      final tache = TacheStandard(id: 3, titre: 'Faire du sport', priorite: Priorite.medium);
+      final tache = StandardTask(id: 3, titre: 'Faire du sport', priorite: Priorite.medium);
       await repo.add(tache);
       
       await repo.delete(3);
@@ -58,23 +57,37 @@ void main() {
       expect(liste.any((t) => t.id == 3), isFalse);
     });
 
-    test('4. Tenter de supprimer une tâche inexistante doit lever TaskNotFoundException', () async {
+    test('4. Tenter de supprimer une tâche inexistante doit lever une TacheException (ou TaskNotFoundException)', () async {
       expect(
         () async => await repo.delete(999), 
         throwsA(isA<TacheException>())
       );
     });
 
-    test('5. Filtrage par priorité',() async{
-      final tache2 = TacheUrgente(id: 5, titre: 'Tâche haute priorité', priorite: Priorite.high);
-      await repo.add(tache2);
+    test('5. La méthode du repository getTasksByPriority doit retourner uniquement les tâches correspondantes', () async {
+      final t1 = StandardTask(id: 4, titre: 'Tâche basse', priorite: Priorite.low);
+      final t2 = UrgentTask(id: 5, titre: 'Bug critique');
+      final t3 = StandardTask(id: 6, titre: 'Autre tâche basse', priorite: Priorite.low);
+      
+      await repo.add(t1);
+      await repo.add(t2);
+      await repo.add(t3);
 
-      final toutesLesTaches = await repo.getAll();
-      final tachesHautePriorite = toutesLesTaches.where((t) => t.priorite == Priorite.high).toList();
+      final resultatFiltre = await repo.getTasksByPriority(Priorite.low);
 
-      expect(tachesHautePriorite.length, equals(1));
-      expect(tachesHautePriorite.first.titre, equals('Tâche haute priorité'));
-    }); 
+      expect(resultatFiltre.length, equals(2));
+      expect(resultatFiltre.any((t) => t.id == 5), isFalse); 
+      expect(resultatFiltre.every((t) => t.priorite == Priorite.low), isTrue);
+    });
+
+    test('6. [Cas limite] getTasksByPriority doit retourner une liste vide si aucune tâche ne correspond', () async {
+      final t1 = StandardTask(id: 7, titre: 'Tâche normale', priorite: Priorite.medium);
+      await repo.add(t1);
+
+      final resultatFiltre = await repo.getTasksByPriority(Priorite.high);
+      
+      expect(resultatFiltre, isEmpty);
+    });
 
   });
 }

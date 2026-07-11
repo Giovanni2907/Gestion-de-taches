@@ -1,26 +1,22 @@
 import 'package:gestion_de_taches/exceptions/tache_exception.dart';
-import 'package:gestion_de_taches/models/priorite.dart';
 import 'package:gestion_de_taches/models/tache.dart';
-import 'package:gestion_de_taches/repositories/repositorie_Interface.dart';
+import 'package:gestion_de_taches/repositories/repositorie_interface.dart';
+import 'package:gestion_de_taches/models/priorite.dart';
 
-class MemoireRepositorie implements IRepository<Tache>{
+class MemoireRepositorie implements IRepository<Task>{
 
-final List<Tache> _taches = [];
+final List<Task> _taches = [];
 
   @override
-  Future<Tache?> getById(int id) async{
-    if (_taches.isEmpty) {
-      return null;
-    }
-    else{
-    final resultat = _taches.where((tache) => tache.id == id);
-  }
+  Future<Task?> getById(int id) async{
+    final trouvees = _taches.where((tache) => tache.id == id);
+    return trouvees.isEmpty ? null : trouvees.first;
   }
 
   @override
-  Future<void> add(Tache item) async{
+  Future<void> add(Task item) async{
     if (_taches.any((tache) => tache.id == item.id)) {
-      throw Exception('Une tâche avec cet ID existe déjà.');
+      throw JsonPersistenceException("Une tâche avec l'ID ${item.id} existe déjà.");
     }
     else{
     _taches.add(item);
@@ -37,12 +33,13 @@ final List<Tache> _taches = [];
   }
 
   @override
-  Future<List<Tache>> getTasksByPriority(Priorite) async{
-    return List.unmodifiable(_taches);
+  Future<List<Task>> getTasksByPriority(Priorite priorite) async{
+    final tachesFiltres = _taches.where((tache) => tache.priorite == priorite).toList();
+    return List.unmodifiable(tachesFiltres);
   }
 
   @override
-  Future<void> update(Tache item) async{
+  Future<void> update(Task item) async{
     final index = _taches.indexWhere((tache) => tache.id == item.id);
     if (index == -1) {
       throw TacheException(item.id);
@@ -50,7 +47,7 @@ final List<Tache> _taches = [];
     _taches[index] = item;
 }
 @override
-  Future<List<Tache>> getAll() async{
+  Future<List<Task>> getAll() async{
     return List.unmodifiable(_taches);
 }
 }

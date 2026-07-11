@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:gestion_de_taches/models/priorite.dart';
 import 'package:gestion_de_taches/models/tache_standard.dart';
 import 'package:gestion_de_taches/models/tache.dart'; 
@@ -9,7 +8,7 @@ import 'package:gestion_de_taches/repositories/repositorie_interface.dart';
 import 'package:gestion_de_taches/exceptions/tache_exception.dart';
 
 void main() async {
-  final IRepository<Tache> repository = JsonTaskRepository();
+  final IRepository<Task> repository = JsonTaskRepository();
 
   print("====================================================");
   print("   BIENVENUE DANS L'APPLICATION GESTION DE TÂCHES   ");
@@ -37,7 +36,7 @@ void main() async {
   stdout.write("👉 Votre choix : ");
   
   final choixAffichage = stdin.readLineSync();
-  List<Tache> list;
+  List<Task> list;
 
   if (choixAffichage == '2') {
     list = await repository.getTasksByPriority(Priorite.low);
@@ -85,13 +84,13 @@ void main() async {
           stdout.write("Votre choix : ");
           final pChoix = stdin.readLineSync();
 
-          Tache nouvelleTache;
+          Task nouvelleTache;
           if (pChoix == '3') {
-            nouvelleTache = TacheUrgente(id: id, titre: titre, priorite: Priorite.high);
+            nouvelleTache = UrgentTask(id: id, titre: titre);
           } else if (pChoix == '2') {
-            nouvelleTache = TacheStandard(id: id, titre: titre, priorite: Priorite.medium);
+            nouvelleTache = StandardTask(id: id, titre: titre, priorite: Priorite.medium);
           } else {
-            nouvelleTache = TacheStandard(id: id, titre: titre, priorite: Priorite.low);
+            nouvelleTache = StandardTask(id: id, titre: titre, priorite: Priorite.low);
           }
 
           await repository.add(nouvelleTache);

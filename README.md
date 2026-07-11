@@ -1,30 +1,38 @@
-A sample command-line application providing basic argument parsing with an entrypoint in `bin/`.
-# Gestion-de-taches
+# Gestion de Tâches (CLI)
 
-Une application en ligne de commande (CLI) robuste développée en **Dart**, permettant de gérer des tâches quotidiennes. Ce projet met en pratique les concepts de Programmation Orientée Objet (POO), le typage générique, la gestion des exceptions personnalisées, la persistance de données au format JSON, et la validation par tests unitaires.
+Une application en ligne de commande (CLI) robuste développée en **Dart**, permettant de gérer des tâches quotidiennes. Ce projet met en pratique les concepts avancés de Programmation Orientée Objet (POO), l'implémentation d'interfaces, le typage générique (Repository Pattern), la gestion des exceptions personnalisées, la persistance des données au format JSON, et la validation par tests unitaires automatisés.
 
 ---
 
 ## Fonctionnalités
 
-* **Ajout de tâches** : Support des tâches standards (priorités `LOW` ou `MEDIUM`) et des tâches urgentes (priorité forcée à `HIGH`).
-* **Persistance locale** : Sauvegarde automatique de vos tâches dans un fichier `taches.json`.
-* **Gestion des états** : Possibilité de marquer une tâche comme terminée ou de la supprimer.
-* **Architecture propre** : Utilisation du *Repository Pattern* avec des contrats d'interface stricts et asynchrones (`Future`).
-* **Sécurité** : Gestion globale des erreurs via des exceptions personnalisées (`TacheException`).
+* **Gestion complète des tâches** : Ajout, listage, mise à jour (marquer comme complétée) et suppression de tâches.
+* **Architecture Orientée Objet** : Utilisation de classes abstraites (`Task`) et d'héritage pour distinguer les tâches standards (`StandardTask` en priorité `low` ou `medium`) des tâches urgentes (`UrgentTask` forcée en priorité `high`).
+* **Repository Pattern & Génériques** : Abstraction totale de la source de données via une interface générique `IRepository<T>`.
+* **Persistance locale** : Sauvegarde et lecture asynchrones automatiques dans un fichier local `taches.json`.
+* **Gestion des erreurs robuste** : Utilisation d'exceptions spécifiques (ex: `TacheException`, `JsonPersistenceException`) étendant toutes la classe native `Exception` de Dart, couplée à une validation des entrées utilisateur (`null safety`).
+
+---
+
+## Structure du Projet
+
+Le projet suit une architecture en couches (*layer-first architecture*) structurée comme suit :
+* `bin/` : Point d'entrée de l'application (exécution des commandes).
+* `lib/models/` : Classes de données (`Tache`, `TacheStandard`, `TacheUrgente`) et enums (`Priorite`).
+* `lib/repositories/` : Contrats d'interfaces génériques (`IRepository`) et implémentations (`JsonTaskRepository`, `MemoireRepository`).
+* `lib/exceptions/` : Exceptions personnalisées.
+* `test/` : Suite de tests unitaires pour valider la logique métier et le filtrage.
 
 ---
 
 ## Prérequis
 
-Assurez-vous d'avoir installé le SDK Dart sur votre machine. 
-* Pour vérifier votre installation, ouvrez votre terminal et tapez :
-    ```bash
-    dart --version
-    ```
+Assurez-vous d'avoir installé le SDK Dart sur votre machine.
+Pour vérifier votre installation, ouvrez votre terminal et exécutez :
+```bash
+dart --version
 
 ---
-
 ## Installation et Configuration
 
 1. **Cloner ou ouvrir le projet** dans votre éditeur (ex: VS Code).
@@ -45,5 +53,7 @@ Assurez-vous d'avoir installé le SDK Dart sur votre machine.
 ## Lancement de l'app
   - L'app se met en marche avec la commande dart run encore une fois tapé dans le terminal de l'IDE
 ```bash
-    dart run
-    
+    dart run 
+``` 
+
+---

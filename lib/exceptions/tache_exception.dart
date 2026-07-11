@@ -1,4 +1,4 @@
-class TacheException {
+class TacheException implements Exception {
   final int id;
   TacheException(this.id);
 
