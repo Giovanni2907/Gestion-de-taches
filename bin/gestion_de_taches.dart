@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:gestion_de_taches/models/priorite.dart';
 import 'package:gestion_de_taches/models/tache_standard.dart';
 import 'package:gestion_de_taches/models/tache.dart'; 
@@ -28,16 +29,40 @@ void main() async {
     try {
       switch (choix) {
         case '1':
-          print("\n --- VOS TÂCHES ---");
-          final list = await repository.getAll();
-          if (list.isEmpty) {
-            print("Aucune tâche enregistrée pour le moment.");
-          } else {
-            for (var t in list) {
-              t.afficherDetails();
-            }
-          }
-          break;
+  print("\n📋 --- AFFICHAGE DES TÂCHES ---");
+  print("1. Afficher absolument TOUTES les tâches");
+  print("2. Filtrer par priorité LOW");
+  print("3. Filtrer par priorité MEDIUM");
+  print("4. Filtrer par priorité HIGH");
+  stdout.write("👉 Votre choix : ");
+  
+  final choixAffichage = stdin.readLineSync();
+  List<Tache> list;
+
+  if (choixAffichage == '2') {
+    list = await repository.getTasksByPriority(Priorite.low);
+    print("\n🔍 [Filtré : Priorité Faible (LOW)]");
+  } else if (choixAffichage == '3') {
+    list = await repository.getTasksByPriority(Priorite.medium);
+    print("\n🔍 [Filtré : Priorité Moyenne (MEDIUM)]");
+  } else if (choixAffichage == '4') {
+    list = await repository.getTasksByPriority(Priorite.high);
+    print("\n🔍 [Filtré : Priorité Haute (HIGH)]");
+  } else {
+    // Par défaut ou si choix '1' : on prend tout
+    list = await repository.getAll();
+    print("\n🔍 [Toutes les tâches]");
+  }
+
+  // Affichage final de la liste obtenue
+  if (list.isEmpty) {
+    print("Aucune tâche ne correspond à cette sélection.");
+  } else {
+    for (var t in list) {
+      t.afficherDetails();
+    }
+  }
+  break;
 
         case '2':
           print("\n --- AJOUTER UNE TÂCHE ---");
@@ -80,6 +105,11 @@ void main() async {
 
           final cache = await repository.getById(idTerminer);
           if (cache == null) throw TacheException(idTerminer);
+
+          cache.estComplete = true;
+          await repository.update(cache);
+          print(" Tâche marquée comme terminée et retirée du système avec succès !");
+         
           break;
 
         case '4':

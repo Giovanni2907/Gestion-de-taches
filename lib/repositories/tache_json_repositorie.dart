@@ -12,12 +12,11 @@ class JsonTaskRepository implements IRepository<Tache> {
 
   JsonTaskRepository({this.filePath = 'taches.json'});
 
-  // --- Fonction utilitaire pour lire le fichier ---
   Future<List<Tache>> _loadFromFile() async {
     try {
       final file = File(filePath);
       if (!await file.exists()) {
-        return []; // Si le fichier n'existe pas encore, on part d'une liste vide
+        return []; 
       }
 
       final jsonString = await file.readAsString();
@@ -25,7 +24,6 @@ class JsonTaskRepository implements IRepository<Tache> {
 
       final List<dynamic> jsonList = jsonDecode(jsonString);
 
-      // C'est ici qu'on utilise .map() ! On transforme chaque Map JSON en vrai objet Tache
       return jsonList.map((json) {
         final priorite = Priorite.values.byName(json['priorite']);
         final id = json['id'] as int;
@@ -48,13 +46,12 @@ class JsonTaskRepository implements IRepository<Tache> {
       throw JsonPersistenceException("Impossible de lire le fichier JSON : $e");
     }
   }
+  
 
-  // --- Fonction utilitaire pour sauvegarder dans le fichier ---
   Future<void> _saveToFile(List<Tache> taches) async {
     try {
       final file = File(filePath);
       
-      // On transforme nos objets Tache en Map (Dictionnaire) pour le JSON
       final jsonList = taches.map((tache) => {
         'id': tache.id,
         'titre': tache.titre,
@@ -63,14 +60,12 @@ class JsonTaskRepository implements IRepository<Tache> {
         'dateLimite': tache.dateLimite?.toIso8601String(),
       }).toList();
 
-      // On écrit le texte JSON dans le fichier
+
       await file.writeAsString(jsonEncode(jsonList));
     } catch (e) {
       throw JsonPersistenceException("Impossible de sauvegarder dans le fichier JSON : $e");
     }
   }
-
-  // --- Implémentation des méthodes du contrat ---
 
   @override
   Future<void> add(Tache item) async {
@@ -80,9 +75,13 @@ class JsonTaskRepository implements IRepository<Tache> {
   }
 
   @override
-  Future<List<Tache>> getAll() async {
-    return await _loadFromFile();
-  }
+Future<List<Tache>> getTasksByPriority(Priorite prioriteCible) async {
+  final toutesLesTaches = await getAll(); 
+  
+  final tachesFiltrees = toutesLesTaches.where((t) => t.priorite == prioriteCible).toList();
+  
+  return tachesFiltrees;
+}
 
   @override
   Future<Tache?> getById(int id) async {
@@ -98,4 +97,18 @@ class JsonTaskRepository implements IRepository<Tache> {
     taches.removeWhere((t) => t.id == id);
     await _saveToFile(taches);
   }
+
+  @override
+  Future<void> update(Tache item) async {
+    final taches = await _loadFromFile();
+    final index = taches.indexWhere((t) => t.id == item.id);
+    if (index == -1) throw TacheException(item.id);
+    taches[index] = item;
+    await _saveToFile(taches);
+  }
+  @override
+  Future<List<Tache>> getAll() async {
+    return await _loadFromFile();
+  }
+  
 }

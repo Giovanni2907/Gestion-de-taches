@@ -1,4 +1,5 @@
 import 'package:gestion_de_taches/exceptions/tache_exception.dart';
+import 'package:gestion_de_taches/models/priorite.dart';
 import 'package:gestion_de_taches/models/tache.dart';
 import 'package:gestion_de_taches/repositories/repositorie_Interface.dart';
 
@@ -36,7 +37,20 @@ final List<Tache> _taches = [];
   }
 
   @override
-  Future<List<Tache>> getAll() async{
+  Future<List<Tache>> getTasksByPriority(Priorite) async{
     return List.unmodifiable(_taches);
   }
+
+  @override
+  Future<void> update(Tache item) async{
+    final index = _taches.indexWhere((tache) => tache.id == item.id);
+    if (index == -1) {
+      throw TacheException(item.id);
+    }
+    _taches[index] = item;
+}
+@override
+  Future<List<Tache>> getAll() async{
+    return List.unmodifiable(_taches);
+}
 }

@@ -5,7 +5,7 @@ abstract class Tache {
   final String titre;
   final Priorite priorite;
   final DateTime? dateLimite;
-  bool estComplete;
+  bool estComplete = false;
 
   Tache({
     required this.id,
